@@ -20,7 +20,10 @@ function bindData(articles){
     const newsCardTemplate = document.getElementById('template-news-card');
 
     cardsContainer.innerHTML = '';
-
+   if(articles.length === 0){
+    cardsContainer.innerHTML = "<h2>No news found for this topic.</h2>";
+    return;
+  }
     articles.forEach(article =>{
         if(!article.urlToImage) return;
         const cardClone = newsCardTemplate.content.cloneNode(true);
