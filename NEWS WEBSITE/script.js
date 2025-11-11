@@ -10,9 +10,17 @@ function reload(){
 }
 
 async function fetchNews (query){
-   const res = await fetch(`${url}${query}&apiKey=${API_KEY}`)
-   const data = await res.json();
-   bindData(data.articles);
+   try {
+    const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+    if(res.status === 429){
+      alert("Daily API limit reached. Please try again later.");
+      return;
+    }
+    const data = await res.json();
+    bindData(data.articles);
+  } catch (error) {
+    alert("Something went wrong while fetching news.");
+  }
 }
 
 function bindData(articles){
