@@ -9,19 +9,41 @@ function reload(){
     window.location.reload();
 }
 
-async function fetchNews (query){
-   try {
+async function fetchNews(query){
+
+  const cached = localStorage.getItem(query);
+  if(cached){
+    console.log("Loaded from cache:", query);
+    bindData(JSON.parse(cached));
+    return;
+  }
+
+  try {
     const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+
     if(res.status === 429){
       alert("Daily API limit reached. Please try again later.");
       return;
     }
+
     const data = await res.json();
+
+    if(!data.articles || data.articles.length === 0){
+      document.getElementById('cards-container').innerHTML =
+        `<p style="padding:20px; font-size:18px;">No news found for "${query}". Try another topic.</p>`;
+      return;
+    }
+
+    localStorage.setItem(query, JSON.stringify(data.articles));
+    console.log("Fetched from API & cached:", query);
+
     bindData(data.articles);
+
   } catch (error) {
     alert("Something went wrong while fetching news.");
   }
 }
+
 
 function bindData(articles){
     const cardsContainer = document.getElementById('cards-container');
